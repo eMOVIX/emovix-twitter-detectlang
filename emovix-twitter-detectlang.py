@@ -47,12 +47,6 @@ if __name__ == '__main__':
             twitterStatus['language_detections'] = []
             twitterStatus['language_detections'].append(result)
 
-            print twitterStatus
-
-            print result['isReliable']
-            print result['confidence']
-            print result['language']
-
             db.twitterStatus.update( { "_id": twitterStatus['_id']}, twitterStatus, upsert=True)
 
         except Exception as e:
