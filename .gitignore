@@ -61,3 +61,6 @@ target/
 
 # virtualenv
 venv/
+
+# config.json
+config.json

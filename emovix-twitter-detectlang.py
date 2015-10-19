@@ -1,9 +1,10 @@
 __author__ = 'Jordi Vilaplana'
 
-import pymongo
 from pymongo import MongoClient
+import detectlanguage
 import json
 import logging
+import time
 
 logging.basicConfig(
     filename='emovix_twitter_detectlang.log',
@@ -30,16 +31,32 @@ if __name__ == '__main__':
     client = MongoClient('mongodb://localhost:27017/')
     db = client[database_name]
 
+    detectlanguage.configuration.api_key = detectlanguage_api_key
+
     while True:
         try:
+            if detectlanguage.user_status()['requests'] >= detectlanguage.user_status()['daily_requests_limit']:
+                time.sleep(5)
+
             twitterStatus = db.twitterStatus.find_one({ "lang": "es", "language_detections": { "$exists": False } })
+
+            result = detectlanguage.detect(twitterStatus['text'])[0]
+
+            result['source'] = 'detectlanguage'
+
+            twitterStatus['language_detections'] = []
+            twitterStatus['language_detections'].append(result)
+
             print twitterStatus
 
+            print result['isReliable']
+            print result['confidence']
+            print result['language']
 
+            db.twitterStatus.update( { "_id": twitterStatus['_id']}, twitterStatus, upsert=True)
 
-            break
         except Exception as e:
-            # Oh well, reconnect and keep trucking
+            # Oh well, just keep going
             logging.error(e.__class__)
             logging.error(e)
             continue
