@@ -1,0 +1,5 @@
+# PyMongo
+pymongo
+
+# Detect Language API Python Client
+detectlanguage
