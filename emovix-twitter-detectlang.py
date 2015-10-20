@@ -36,6 +36,7 @@ if __name__ == '__main__':
     while True:
         try:
             if detectlanguage.user_status()['requests'] >= detectlanguage.user_status()['daily_requests_limit']:
+                logging.debug("Number of requests over daily limit.")
                 time.sleep(5)
 
             twitterStatus = db.twitterStatus.find_one({ "lang": "es", "language_detections": { "$exists": False } })
