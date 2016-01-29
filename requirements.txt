@@ -1,8 +1,8 @@
-# Requests
-requests
-
 # PyMongo
 pymongo
+
+# Requests to avoid InsecurePlatformWarning
+requests==2.5.3
 
 # Detect Language API Python Client
 detectlanguage
