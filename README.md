@@ -8,20 +8,17 @@ Language detection module for the #eMOVIX Twitter project
  - pip
  - virtualenv
 
+
 ## Installation
 
-    git clone https://github.com/eMOVIX/emovix-twitter-detectlang.git
-    cd emovix-twitter-detectlang
+    git clone https://github.com/eMOVIX/emovix-twitter-streaming.git
+    cd emovix-twitter-streaming
     virtualenv venv
     source venv/bin/activate
     pip install -r requirements.txt
 
 ## Configuration
 
-Add your Twitter API credentials and MongoDB database name to the configuration file:
+Add your Language Detection API credentials to the configuration file:
 
     vim config.json
-
-## Usage
-
-    python emovix-twitter-streaming.py
