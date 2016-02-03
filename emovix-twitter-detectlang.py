@@ -58,22 +58,26 @@ if __name__ == '__main__':
 
                         count = 0
                         for detection in detections:
-                            detection[0]['source'] = 'detectlanguage'
-                            batch_status[count]['language_detections'] = []
-                            batch_status[count]['language_detections'].append(detection[0])
-                            db.twitterStatus.update( { "_id": batch_status[count]['_id']}, twitterStatus, upsert=True)
+                            if len(detection) == 0:
+                                detection = {}
+                                detection['source'] = 'detectlanguage'
+                                batch_status[count]['language_detections'] = []
+                            else:
+                                detection[0]['source'] = 'detectlanguage'
+                                batch_status[count]['language_detections'] = []
+                                batch_status[count]['language_detections'].append(detection[0])
+
+                            db.twitterStatus.update( { "_id": batch_status[count]['_id']}, batch_status[count], upsert=True)
                             count += 1
 
                         count = 0
                         batch_request = []
-                        batch_ids = []
+                        batch_status = []
 
                     text = twitterStatus['text'].encode('utf-8')
                     batch_request.append(text)
                     batch_status.append(twitterStatus)
                     count += 1
-
-            break
 
         except Exception as e:
             # Oh well, just keep going
