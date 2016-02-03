@@ -8,7 +8,7 @@ import time
 
 logging.basicConfig(
     filename='emovix_twitter_detectlang.log',
-    level=logging.DEBUG,
+    level=logging.WARNING,
     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
     datefmt='%d-%m-%y %H:%M')
 
@@ -41,22 +41,39 @@ if __name__ == '__main__':
                 logging.debug("Number of requests over daily limit.")
                 time.sleep(60)
 
-            twitterStatus = db.twitterStatus.find_one({ "language_detections": { "$exists": False } })
-            text = twitterStatus['text'].encode('utf-8')
-            result = detectlanguage.detect(text)
+            statuses = db.twitterStatus.find({ "language_detections": { "$exists": False } })
 
-            if len(result) == 0:
-                result = {}
-                result['source'] = 'detectlanguage'
-                twitterStatus['language_detections'] = []
-            else:
-                result = result[0]
-                result['source'] = 'detectlanguage'
+            if statuses:
+                count = 0
+                batch_request = []
+                batch_status = []
+                for twitterStatus in statuses:
+                    if count >= 20:
+                        logging.debug("Processing batch ...")
+                        detections = detectlanguage.detect(batch_request)
 
-                twitterStatus['language_detections'] = []
-                twitterStatus['language_detections'].append(result)
+                        if len(detections) != 20:
+                            logging.error("ABNORMAL NUMBER OF LANGUAGE DETECTIONS: " + str(len(detections)))
+                            break
 
-            db.twitterStatus.update( { "_id": twitterStatus['_id']}, twitterStatus, upsert=True)
+                        count = 0
+                        for detection in detections:
+                            detection[0]['source'] = 'detectlanguage'
+                            batch_status[count]['language_detections'] = []
+                            batch_status[count]['language_detections'].append(detection[0])
+                            db.twitterStatus.update( { "_id": batch_status[count]['_id']}, twitterStatus, upsert=True)
+                            count += 1
+
+                        count = 0
+                        batch_request = []
+                        batch_ids = []
+
+                    text = twitterStatus['text'].encode('utf-8')
+                    batch_request.append(text)
+                    batch_status.append(twitterStatus)
+                    count += 1
+
+            break
 
         except Exception as e:
             # Oh well, just keep going
