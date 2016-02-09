@@ -41,18 +41,18 @@ if __name__ == '__main__':
                 logging.debug("Number of requests over daily limit.")
                 time.sleep(60)
 
-            statuses = db.twitterStatus.find({ "language_detections": { "$exists": False } })
+            statuses = db.twitterStatus.find({ "language_detections.language": { "$exists": False } })
 
             if statuses:
                 count = 0
                 batch_request = []
                 batch_status = []
                 for twitterStatus in statuses:
-                    if count >= 20:
+                    if count >= 100:
                         logging.debug("Processing batch ...")
                         detections = detectlanguage.detect(batch_request)
 
-                        if len(detections) != 20:
+                        if len(detections) != 100:
                             logging.error("ABNORMAL NUMBER OF LANGUAGE DETECTIONS: " + str(len(detections)))
                             break
 
@@ -61,7 +61,9 @@ if __name__ == '__main__':
                             if len(detection) == 0:
                                 detection = {}
                                 detection['source'] = 'detectlanguage'
+                                detection['language'] = ''
                                 batch_status[count]['language_detections'] = []
+                                batch_status[count]['language_detections'].append(detection)
                             else:
                                 detection[0]['source'] = 'detectlanguage'
                                 batch_status[count]['language_detections'] = []
