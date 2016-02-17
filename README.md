@@ -11,8 +11,8 @@ Language detection module for the #eMOVIX Twitter project
 
 ## Installation
 
-    git clone https://github.com/eMOVIX/emovix-twitter-streaming.git
-    cd emovix-twitter-streaming
+    git clone https://github.com/eMOVIX/emovix-twitter-detectlang.git
+    cd emovix-twitter-detectlang
     virtualenv venv
     source venv/bin/activate
     pip install -r requirements.txt
