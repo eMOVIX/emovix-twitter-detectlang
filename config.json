@@ -1,5 +1,6 @@
 {
   "detectlanguage_api_key": "",
   "database_host": "",
-  "database_name": ""
+  "database_name": "",
+  "source_box": ""
 }
