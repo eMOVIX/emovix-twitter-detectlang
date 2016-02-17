@@ -16,6 +16,7 @@ logging.basicConfig(
 detectlanguage_api_key = ""
 database_host = ""
 database_name = ""
+twitterStatusCol = ""
 
 client = None
 db = None
@@ -29,6 +30,7 @@ if __name__ == '__main__':
         detectlanguage_api_key = config['detectlanguage_api_key']
         database_host = config['database_host']
         database_name = config['database_name']
+        twitterStatusCol = config['source_box'] + "_twitterStatus"
 
     client = MongoClient('mongodb://' + database_host + ':27017/')
     db = client[database_name]
@@ -41,7 +43,7 @@ if __name__ == '__main__':
                 logging.debug("Number of requests over daily limit.")
                 time.sleep(60)
 
-            statuses = db.twitterStatus.find({ "language_detections.language": { "$exists": False } })
+            statuses = db[twitterStatusCol].find({ "language_detections.language": { "$exists": False } })
 
             if statuses:
                 count = 0
@@ -69,7 +71,7 @@ if __name__ == '__main__':
                                 batch_status[count]['language_detections'] = []
                                 batch_status[count]['language_detections'].append(detection[0])
 
-                            db.twitterStatus.update( { "_id": batch_status[count]['_id']}, batch_status[count], upsert=True)
+                            db[twitterStatusCol].update( { "_id": batch_status[count]['_id']}, batch_status[count], upsert=True)
                             count += 1
 
                         count = 0
