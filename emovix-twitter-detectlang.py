@@ -50,11 +50,11 @@ if __name__ == '__main__':
                 batch_request = []
                 batch_status = []
                 for twitterStatus in statuses:
-                    if count >= 100:
+                    if count >= 500:
                         logging.debug("Processing batch ...")
                         detections = detectlanguage.detect(batch_request)
 
-                        if len(detections) != 100:
+                        if len(detections) != 500:
                             logging.error("ABNORMAL NUMBER OF LANGUAGE DETECTIONS: " + str(len(detections)))
                             break
 
